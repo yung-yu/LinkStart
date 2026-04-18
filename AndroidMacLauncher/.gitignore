@@ -6,8 +6,8 @@ Icon
 
 
 # Build Artifacts
-MacScrcpy.app/
-MacScrcpy.dmg
+LinkStart.app/
+LinkStart.dmg
 dmg_staging/
 
 # Swift / Packages

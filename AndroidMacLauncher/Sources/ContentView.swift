@@ -95,6 +95,25 @@ struct ContentView: View {
                         UserDefaults.standard.set(newValue, forKey: "selectedDeviceId")
                         viewModel.refreshApps()
                     }
+                    
+                    // Search Bar
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        TextField("Search apps...", text: $viewModel.searchText)
+                            .textFieldStyle(.plain)
+                        if !viewModel.searchText.isEmpty {
+                            Button(action: { viewModel.searchText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(6)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(8)
+                    .frame(width: 180)
                 }
                 
                 Spacer()
@@ -183,7 +202,7 @@ struct ContentView: View {
             } else {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 20) {
-                        ForEach(viewModel.apps) { app in
+                        ForEach(viewModel.filteredApps) { app in
                             AppItemView(app: app) {
                                 let res = "\(displayWidth)x\(displayHeight)"
                                 viewModel.launchApp(appId: app.id, resolution: res, useNewDisplay: useNewDisplay)

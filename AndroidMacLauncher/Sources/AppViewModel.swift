@@ -9,8 +9,20 @@ class AppViewModel: ObservableObject {
     @Published var selectedDeviceId: String = UserDefaults.standard.string(forKey: "selectedDeviceId") ?? ""
     @Published var isLoading: Bool = false
     @Published var progress: String = ""
+    @Published var searchText: String = ""
     @Published var alertError: String? = nil
     @Published var errorMsg: String? = nil
+    
+    var filteredApps: [AppDetail] {
+        if searchText.isEmpty {
+            return apps
+        } else {
+            return apps.filter { 
+                $0.name.localizedCaseInsensitiveContains(searchText) || 
+                $0.id.localizedCaseInsensitiveContains(searchText) 
+            }
+        }
+    }
     
     func checkDependenciesAndRefresh() {
         isLoading = true
