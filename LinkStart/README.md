@@ -28,11 +28,11 @@ MacScrcpy 是一個為 macOS 打造的原生輔助工具，專門用於優化 `s
 
 1. **複製專案到本地**：
    ```bash
-   cd /androidDeviceMirror/MacScrcpy
+   cd /androidDeviceMirror/LinkStart
    ```
 
 2. **編譯應用程式**：
-   執行腳本，這將會生成 `MacScrcpy.app`。
+   執行腳本，這將會生成 `LinkStart.app`。
    ```bash
    chmod +x build.sh
    ./build.sh
@@ -40,7 +40,7 @@ MacScrcpy 是一個為 macOS 打造的原生輔助工具，專門用於優化 `s
 
 3. **啟動**：
    ```bash
-   open MacScrcpy.app
+   open LinkStart.app
    ```
 
 ## 📖 使用說明
