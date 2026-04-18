@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+
+# Build Artifacts
+MacScrcpy.app/
+MacScrcpy.dmg
+dmg_staging/
+
+# Swift / Packages
+.build/
+.swiftpm/
+Package.resolved
+
+# Temporary Files
+*.swp
+*.log
