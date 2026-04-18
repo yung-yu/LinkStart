@@ -79,7 +79,7 @@ struct ContentView: View {
         VStack(spacing: 0) {
             // Header
             HStack(spacing: 16) {
-                Text("LinkStart")
+                Text(NSLocalizedString("app_name", comment: "App Name"))
                     .font(.title2)
                     .fontWeight(.bold)
                 
@@ -96,11 +96,10 @@ struct ContentView: View {
                         viewModel.refreshApps()
                     }
                     
-                    // Search Bar
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
-                        TextField("Search apps...", text: $viewModel.searchText)
+                        TextField(NSLocalizedString("search_placeholder", comment: "Search Placeholder"), text: $viewModel.searchText)
                             .textFieldStyle(.plain)
                         if !viewModel.searchText.isEmpty {
                             Button(action: { viewModel.searchText = "" }) {
@@ -118,18 +117,24 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Toggle("New Display", isOn: $useNewDisplay)
+                Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $useNewDisplay)
                     .toggleStyle(.checkbox)
+                
+                Toggle(NSLocalizedString("include_system_apps", comment: "Include System Apps"), isOn: $viewModel.includeSystemApps)
+                    .toggleStyle(.checkbox)
+                    .onChange(of: viewModel.includeSystemApps) { _ in
+                        viewModel.refreshApps()
+                    }
                 
                 if useNewDisplay {
                     HStack(spacing: 4) {
-                        TextField("W", text: $displayWidth)
+                        TextField(NSLocalizedString("width_label", comment: "Width"), text: $displayWidth)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 50)
                             .multilineTextAlignment(.center)
                         Text("x")
                             .foregroundColor(.secondary)
-                        TextField("H", text: $displayHeight)
+                        TextField(NSLocalizedString("height_label", comment: "Height"), text: $displayHeight)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 50)
                             .multilineTextAlignment(.center)
@@ -156,14 +161,14 @@ struct ContentView: View {
                         .font(.system(size: 48))
                         .foregroundColor(.red)
                         .padding()
-                    Text("Dependency Installation Failed")
+                    Text(NSLocalizedString("dep_failed_title", comment: "Dependency Error Title"))
                         .font(.headline)
                         .foregroundColor(.red)
                     Text(errorMsg)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding()
-                    Button("Retry") {
+                    Button(NSLocalizedString("retry_button", comment: "Retry Button")) {
                          viewModel.checkDependenciesAndRefresh()
                     }
                     Spacer()
@@ -187,13 +192,13 @@ struct ContentView: View {
                         .font(.system(size: 48))
                         .foregroundColor(.secondary)
                         .padding()
-                    Text("No Apps Found")
+                    Text(NSLocalizedString("no_apps_title", comment: "No Apps Title"))
                         .font(.headline)
-                    Text("Ensure your Android device is connected and debugging is authorized via adb.")
+                    Text(NSLocalizedString("no_apps_message", comment: "No Apps Message"))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding()
-                    Button("Retry") {
+                    Button(NSLocalizedString("retry_button", comment: "Retry Button")) {
                          viewModel.checkDependenciesAndRefresh()
                     }
                     Spacer()
@@ -232,13 +237,13 @@ struct ContentView: View {
             viewModel.checkDependenciesAndRefresh()
         }
         .frame(minWidth: 500, minHeight: 400)
-        .alert("Execution Error", isPresented: Binding(
+        .alert(NSLocalizedString("exec_error_title", comment: "Execution Error Title"), isPresented: Binding(
             get: { viewModel.alertError != nil },
             set: { if !$0 { viewModel.alertError = nil } }
         )) {
-            Button("OK", role: .cancel) { }
+            Button(NSLocalizedString("ok_button", comment: "OK Button"), role: .cancel) { }
         } message: {
-            Text(viewModel.alertError ?? "An unknown error occurred.")
+            Text(viewModel.alertError ?? NSLocalizedString("unknown_error", comment: "Unknown Error"))
         }
     }
 }

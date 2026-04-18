@@ -10,6 +10,7 @@ class AppViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var progress: String = ""
     @Published var searchText: String = ""
+    @Published var includeSystemApps: Bool = false
     @Published var alertError: String? = nil
     @Published var errorMsg: String? = nil
     
@@ -26,17 +27,17 @@ class AppViewModel: ObservableObject {
     
     func checkDependenciesAndRefresh() {
         isLoading = true
-        progress = "Checking dependencies..."
+        progress = NSLocalizedString("prog_checking_dep", comment: "Checking Dependencies")
         errorMsg = nil
         
         Task.detached {
             if !ShellManager.shared.isToolInstalled("adb") {
-                await MainActor.run { self.progress = "Installing adb (android-platform-tools)..." }
+                await MainActor.run { self.progress = NSLocalizedString("prog_install_adb", comment: "Installing ADB") }
                 do {
                     try ShellManager.shared.run("brew install --cask android-platform-tools")
                 } catch {
                     await MainActor.run {
-                        self.errorMsg = "Failed to install adb. Please install homebrew or run: brew install --cask android-platform-tools manually."
+                        self.errorMsg = NSLocalizedString("err_adb_install", comment: "ADB Install Error")
                         self.isLoading = false
                     }
                     return
@@ -44,12 +45,12 @@ class AppViewModel: ObservableObject {
             }
             
             if !ShellManager.shared.isToolInstalled("scrcpy") {
-                await MainActor.run { self.progress = "Installing scrcpy... This may take a few minutes." }
+                await MainActor.run { self.progress = NSLocalizedString("prog_install_scrcpy", comment: "Installing Scrcpy") }
                 do {
                     try ShellManager.shared.run("brew install scrcpy")
                 } catch {
                     await MainActor.run {
-                        self.errorMsg = "Failed to install scrcpy. Please install homebrew or run: brew install scrcpy manually."
+                        self.errorMsg = NSLocalizedString("err_scrcpy_install", comment: "Scrcpy Install Error")
                         self.isLoading = false
                     }
                     return
@@ -71,24 +72,27 @@ class AppViewModel: ObservableObject {
         }
         
         if currentDevices.isEmpty {
-            self.progress = "No adb devices found."
+            self.progress = NSLocalizedString("err_no_devices", comment: "No Devices Error")
             self.isLoading = false
             return
         }
         
-        progress = "Listing packages for \(selectedDeviceId)..."
+        progress = String(format: NSLocalizedString("prog_listing_packages", comment: "Listing Packages"), selectedDeviceId)
         
         Task {
             // Retrieve installed packages using the shell
-            let packageIds = ShellManager.shared.getInstalledPackages(deviceId: selectedDeviceId.isEmpty ? nil : selectedDeviceId)
+            let packageIds = ShellManager.shared.getInstalledPackages(
+                deviceId: selectedDeviceId.isEmpty ? nil : selectedDeviceId,
+                includeSystem: includeSystemApps
+            )
             
             if packageIds.isEmpty {
-                self.progress = "No packages found, or adb device is offline."
+                self.progress = NSLocalizedString("err_no_packages", comment: "No Packages Error")
                 self.isLoading = false
                 return
             }
             
-            self.progress = "Fetching details for \(packageIds.count) apps..."
+            self.progress = String(format: NSLocalizedString("prog_fetching_details", comment: "Fetching Details"), packageIds.count)
             
             var fetchedApps: [AppDetail] = []
             
@@ -119,7 +123,7 @@ class AppViewModel: ObservableObject {
                 }
             }
             
-            self.progress = "Loaded \(fetchedApps.count) apps."
+            self.progress = String(format: NSLocalizedString("prog_loaded_count", comment: "Loaded Count"), fetchedApps.count)
             self.isLoading = false
         }
     }
@@ -148,7 +152,7 @@ class AppViewModel: ObservableObject {
             
             do {
                 let deviceId = await MainActor.run { self.selectedDeviceId.isEmpty ? nil : self.selectedDeviceId }
-                let deviceName = await MainActor.run { self.devices.first(where: { $0.id == (deviceId ?? "") })?.name ?? "Android Device" }
+                let deviceName = await MainActor.run { self.devices.first(where: { $0.id == (deviceId ?? "") })?.name ?? NSLocalizedString("fallback_device_name", comment: "Fallback Device Name") }
                 
                 // Only use the app name in the title if we are opening a new virtual display.
                 // For the main mirror, keep the title stable as the device name for better window reuse.

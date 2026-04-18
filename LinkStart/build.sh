@@ -18,6 +18,12 @@ if [ -f "AppIcon.icns" ]; then
     echo "🎨 Icon bundled."
 fi
 
+# Copy Localization files
+if [ -d "Resources" ]; then
+    cp -r Resources/*.lproj "$RESOURCES_DIR/" 2>/dev/null
+    echo "🌍 Localization bundled."
+fi
+
 # Create Info.plist dynamically
 cat << 'PLIST' > "$APP_DIR/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
@@ -28,6 +34,8 @@ cat << 'PLIST' > "$APP_DIR/Contents/Info.plist"
     <string>LinkStart</string>
     <key>CFBundleIdentifier</key>
     <string>com.example.LinkStart</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>zh-Hant</string>
     <key>CFBundleName</key>
     <string>LinkStart</string>
     <key>CFBundlePackageType</key>

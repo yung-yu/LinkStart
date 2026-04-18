@@ -87,10 +87,12 @@ struct ShellManager {
         }
     }
     
-    func getInstalledPackages(deviceId: String?) -> [String] {
+    func getInstalledPackages(deviceId: String?, includeSystem: Bool) -> [String] {
         do {
-            // -3 filters for third-party user apps to avoid 300+ unresolvable system configs
-            let adbCommand = deviceId != nil ? "adb -s \(deviceId!) shell pm list packages -3" : "adb shell pm list packages -3"
+            // -3 filters for third-party user apps to avoid 300+ unresolvable system configs.
+            // If includeSystem is true, we remove the -3 flag to show all apps.
+            let filterFlag = includeSystem ? "" : " -3"
+            let adbCommand = deviceId != nil ? "adb -s \(deviceId!) shell pm list packages\(filterFlag)" : "adb shell pm list packages\(filterFlag)"
             let output = try run(adbCommand)
             // Output is like: package:com.example.app\npackage:com.another.app
             let lines = output.components(separatedBy: .newlines)
