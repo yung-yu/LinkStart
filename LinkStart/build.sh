@@ -54,8 +54,8 @@ cat << 'PLIST' > "$APP_DIR/Contents/Info.plist"
 </plist>
 PLIST
 
-# Compile Swift code directly into the macOS Executable folder
-swiftc Sources/*.swift -parse-as-library -o "$MACOS_DIR/$APP_NAME"
+# Compile Swift code with optimization (-O) for release
+swiftc -O Sources/*.swift -parse-as-library -o "$MACOS_DIR/$APP_NAME"
 
 if [ $? -eq 0 ]; then
     echo "✅ Build successful! The App bundle is located at: $PWD/$APP_DIR"

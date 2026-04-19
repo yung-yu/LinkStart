@@ -78,76 +78,91 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            HStack(spacing: 16) {
-                Text(NSLocalizedString("app_name", comment: "App Name"))
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                if !viewModel.devices.isEmpty {
-                    Picker("", selection: $viewModel.selectedDeviceId) {
-                        ForEach(viewModel.devices) { device in
-                            Text(device.name).tag(device.id)
+            VStack(spacing: 12) {
+                // Top Row
+                HStack(spacing: 16) {
+                    Text(NSLocalizedString("app_name", comment: "App Name"))
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    if !viewModel.devices.isEmpty {
+                        Picker("", selection: $viewModel.selectedDeviceId) {
+                            ForEach(viewModel.devices) { device in
+                                Text(device.name).tag(device.id)
+                            }
                         }
-                    }
-                    .pickerStyle(.menu)
-                    .frame(maxWidth: 150)
-                    .onChange(of: viewModel.selectedDeviceId) { newValue in
-                        UserDefaults.standard.set(newValue, forKey: "selectedDeviceId")
-                        viewModel.refreshApps()
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: 150)
+                        .onChange(of: viewModel.selectedDeviceId) { newValue in
+                            UserDefaults.standard.set(newValue, forKey: "selectedDeviceId")
+                            viewModel.refreshApps()
+                        }
+                        
+                        HStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.secondary)
+                            TextField(NSLocalizedString("search_placeholder", comment: "Search Placeholder"), text: $viewModel.searchText)
+                                .textFieldStyle(.plain)
+                            if !viewModel.searchText.isEmpty {
+                                Button(action: { viewModel.searchText = "" }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(6)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(8)
+                        .frame(width: 180)
                     }
                     
-                    HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        TextField(NSLocalizedString("search_placeholder", comment: "Search Placeholder"), text: $viewModel.searchText)
-                            .textFieldStyle(.plain)
-                        if !viewModel.searchText.isEmpty {
-                            Button(action: { viewModel.searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.secondary)
-                            }
-                            .buttonStyle(.plain)
+                    Spacer()
+                    
+                    Toggle(NSLocalizedString("include_system_apps", comment: "Include System Apps"), isOn: $viewModel.includeSystemApps)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: viewModel.includeSystemApps) { _ in
+                            viewModel.refreshApps()
+                        }
+                    
+                    Button(action: {
+                        viewModel.checkDependenciesAndRefresh()
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.isLoading)
+                    
+                    Button(action: {
+                        viewModel.fetchAboutInfo()
+                    }) {
+                        Image(systemName: "info.circle")
+                    }
+                    .buttonStyle(.bordered)
+                }
+                
+                // Bottom Row
+                HStack(spacing: 16) {
+                    Spacer()
+                    
+                    Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $useNewDisplay)
+                        .toggleStyle(.checkbox)
+                    
+                    if useNewDisplay {
+                        HStack(spacing: 4) {
+                            TextField(NSLocalizedString("width_label", comment: "Width"), text: $displayWidth)
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 50)
+                                .multilineTextAlignment(.center)
+                            Text("x")
+                                .foregroundColor(.secondary)
+                            TextField(NSLocalizedString("height_label", comment: "Height"), text: $displayHeight)
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 50)
+                                .multilineTextAlignment(.center)
                         }
                     }
-                    .padding(6)
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(8)
-                    .frame(width: 180)
                 }
-                
-                Spacer()
-                
-                Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $useNewDisplay)
-                    .toggleStyle(.checkbox)
-                
-                Toggle(NSLocalizedString("include_system_apps", comment: "Include System Apps"), isOn: $viewModel.includeSystemApps)
-                    .toggleStyle(.checkbox)
-                    .onChange(of: viewModel.includeSystemApps) { _ in
-                        viewModel.refreshApps()
-                    }
-                
-                if useNewDisplay {
-                    HStack(spacing: 4) {
-                        TextField(NSLocalizedString("width_label", comment: "Width"), text: $displayWidth)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 50)
-                            .multilineTextAlignment(.center)
-                        Text("x")
-                            .foregroundColor(.secondary)
-                        TextField(NSLocalizedString("height_label", comment: "Height"), text: $displayHeight)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 50)
-                            .multilineTextAlignment(.center)
-                    }
-                }
-                
-                Button(action: {
-                    viewModel.checkDependenciesAndRefresh()
-                }) {
-                    Image(systemName: "arrow.clockwise")
-                }
-                .buttonStyle(.bordered)
-                .disabled(viewModel.isLoading)
             }
             .padding()
             .background(Color(NSColor.windowBackgroundColor).opacity(0.9))
@@ -244,6 +259,11 @@ struct ContentView: View {
             Button(NSLocalizedString("ok_button", comment: "OK Button"), role: .cancel) { }
         } message: {
             Text(viewModel.alertError ?? NSLocalizedString("unknown_error", comment: "Unknown Error"))
+        }
+        .alert(NSLocalizedString("about_title", value: "About LinkStart", comment: "About Title"), isPresented: $viewModel.showAbout) {
+            Button(NSLocalizedString("ok_button", comment: "OK Button"), role: .cancel) { }
+        } message: {
+            Text(viewModel.aboutInfo)
         }
     }
 }

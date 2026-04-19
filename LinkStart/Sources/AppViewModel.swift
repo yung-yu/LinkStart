@@ -14,6 +14,9 @@ class AppViewModel: ObservableObject {
     @Published var alertError: String? = nil
     @Published var errorMsg: String? = nil
     
+    @Published var showAbout: Bool = false
+    @Published var aboutInfo: String = ""
+    
     var filteredApps: [AppDetail] {
         if searchText.isEmpty {
             return apps
@@ -163,6 +166,50 @@ class AppViewModel: ObservableObject {
                 await MainActor.run {
                     self.alertError = error.localizedDescription
                 }
+            }
+        }
+    }
+    
+    func fetchAboutInfo() {
+        Task {
+            var adbVersion = "Unknown"
+            var scrcpyVersion = "Unknown"
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+            let buildVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+            
+            do {
+                let adbOut = try ShellManager.shared.run("adb --version")
+                if let line = adbOut.components(separatedBy: .newlines).first(where: { $0.contains("Version") || $0.contains("version") }) {
+                    adbVersion = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                } else {
+                    adbVersion = adbOut.components(separatedBy: .newlines).first ?? "Installed"
+                }
+            } catch {
+                adbVersion = "Not Installed or Error"
+            }
+            
+            do {
+                let scrcpyOut = try ShellManager.shared.run("scrcpy --version")
+                if let line = scrcpyOut.components(separatedBy: .newlines).first(where: { $0.contains("scrcpy") }) {
+                    scrcpyVersion = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                } else {
+                    scrcpyVersion = scrcpyOut.components(separatedBy: .newlines).first ?? "Installed"
+                }
+            } catch {
+                scrcpyVersion = "Not Installed or Error"
+            }
+            
+            let info = """
+            App Version: \(appVersion) (Build \(buildVersion))
+            
+            ADB: \(adbVersion)
+            
+            Scrcpy: \(scrcpyVersion)
+            """
+            
+            await MainActor.run {
+                self.aboutInfo = info
+                self.showAbout = true
             }
         }
     }
