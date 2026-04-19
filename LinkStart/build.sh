@@ -33,7 +33,7 @@ cat << 'PLIST' > "$APP_DIR/Contents/Info.plist"
     <key>CFBundleExecutable</key>
     <string>LinkStart</string>
     <key>CFBundleIdentifier</key>
-    <string>com.example.LinkStart</string>
+    <string>com.andy.LinkStart</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>zh-Hant</string>
     <key>CFBundleName</key>
