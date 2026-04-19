@@ -22,3 +22,8 @@
 "prog_loaded_count" = "已載入 %1$d 個應用程式。";
 "fallback_device_name" = "Android 裝置";
 "include_system_apps" = "包含系統應用程式";
+"about_title" = "關於 LinkStart";
+"about_author" = "作者: AndyLi";
+"about_source" = "來源: ";
+"about_contact" = "聯絡: ";
+"about_app_ver" = "應用程式版本: ";

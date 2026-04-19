@@ -22,3 +22,8 @@
 "prog_loaded_count" = "Loaded %1$d apps.";
 "fallback_device_name" = "Android Device";
 "include_system_apps" = "Include System Apps";
+"about_title" = "About LinkStart";
+"about_author" = "Author: AndyLi";
+"about_source" = "Source: ";
+"about_contact" = "Contact: ";
+"about_app_ver" = "App Version: ";

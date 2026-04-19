@@ -266,13 +266,13 @@ struct ContentView: View {
                     .font(.headline)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("作者: AndyLi")
+                    Text(NSLocalizedString("about_author", value: "Author: AndyLi", comment: "Author"))
                     HStack(spacing: 0) {
-                        Text("來源: ")
+                        Text(NSLocalizedString("about_source", value: "Source: ", comment: "Source"))
                         Link("https://github.com/yung-yu/LinkStart", destination: URL(string: "https://github.com/yung-yu/LinkStart")!)
                     }
                     HStack(spacing: 0) {
-                        Text("聯絡: ")
+                        Text(NSLocalizedString("about_contact", value: "Contact: ", comment: "Contact"))
                         Link("yungyu405728@gmail.com", destination: URL(string: "mailto:yungyu405728@gmail.com")!)
                     }
                 }
@@ -280,7 +280,7 @@ struct ContentView: View {
                 Divider()
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("App Version: \(viewModel.aboutAppVersion)")
+                    Text(NSLocalizedString("about_app_ver", value: "App Version: ", comment: "App Version") + viewModel.aboutAppVersion)
                     Text("ADB: \(viewModel.aboutAdbVersion)")
                     Text("Scrcpy: \(viewModel.aboutScrcpyVersion)")
                 }
