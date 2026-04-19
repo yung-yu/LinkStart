@@ -15,7 +15,9 @@ class AppViewModel: ObservableObject {
     @Published var errorMsg: String? = nil
     
     @Published var showAbout: Bool = false
-    @Published var aboutInfo: String = ""
+    @Published var aboutAdbVersion: String = ""
+    @Published var aboutScrcpyVersion: String = ""
+    @Published var aboutAppVersion: String = ""
     
     var filteredApps: [AppDetail] {
         if searchText.isEmpty {
@@ -199,16 +201,10 @@ class AppViewModel: ObservableObject {
                 scrcpyVersion = "Not Installed or Error"
             }
             
-            let info = """
-            App Version: \(appVersion) (Build \(buildVersion))
-            
-            ADB: \(adbVersion)
-            
-            Scrcpy: \(scrcpyVersion)
-            """
-            
             await MainActor.run {
-                self.aboutInfo = info
+                self.aboutAdbVersion = adbVersion
+                self.aboutScrcpyVersion = scrcpyVersion
+                self.aboutAppVersion = "\(appVersion) (Build \(buildVersion))"
                 self.showAbout = true
             }
         }

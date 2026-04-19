@@ -260,10 +260,39 @@ struct ContentView: View {
         } message: {
             Text(viewModel.alertError ?? NSLocalizedString("unknown_error", comment: "Unknown Error"))
         }
-        .alert(NSLocalizedString("about_title", value: "About LinkStart", comment: "About Title"), isPresented: $viewModel.showAbout) {
-            Button(NSLocalizedString("ok_button", comment: "OK Button"), role: .cancel) { }
-        } message: {
-            Text(viewModel.aboutInfo)
+        .sheet(isPresented: $viewModel.showAbout) {
+            VStack(spacing: 16) {
+                Text(NSLocalizedString("about_title", value: "About LinkStart", comment: "About Title"))
+                    .font(.headline)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("作者: AndyLi")
+                    HStack(spacing: 0) {
+                        Text("來源: ")
+                        Link("https://github.com/yung-yu/LinkStart", destination: URL(string: "https://github.com/yung-yu/LinkStart")!)
+                    }
+                    HStack(spacing: 0) {
+                        Text("聯絡: ")
+                        Link("yungyu405728@gmail.com", destination: URL(string: "mailto:yungyu405728@gmail.com")!)
+                    }
+                }
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("App Version: \(viewModel.aboutAppVersion)")
+                    Text("ADB: \(viewModel.aboutAdbVersion)")
+                    Text("Scrcpy: \(viewModel.aboutScrcpyVersion)")
+                }
+                .font(.footnote)
+                
+                Button(NSLocalizedString("ok_button", comment: "OK Button")) {
+                    viewModel.showAbout = false
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding(24)
+            .frame(width: 320)
         }
     }
 }
