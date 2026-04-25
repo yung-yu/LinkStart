@@ -167,7 +167,7 @@ struct ShellManager {
         try? task.run()
     }
     
-    func startScrcpy(for packageId: String, deviceId: String?, resolution: String, useNewDisplay: Bool, iconPath: String? = nil, title: String? = nil) async throws {
+    func startScrcpy(for packageId: String, deviceId: String?, resolution: String, videoBitRate: String, useNewDisplay: Bool, iconPath: String? = nil, title: String? = nil) async throws {
         // Handle window reuse logic
         if useNewDisplay {
             // Check if this specific app is already running in a virtual display
@@ -191,6 +191,11 @@ struct ShellManager {
 
         // Starts scrcpy.
         var command = deviceId != nil ? "scrcpy -s \(deviceId!) --start-app=\(packageId)" : "scrcpy --start-app=\(packageId)"
+        
+        if let mbps = Int(videoBitRate) {
+            let bitRateValue = mbps * 1000000
+            command += " --video-bit-rate=\(bitRateValue)"
+        }
         
         if let windowTitle = title {
             command += " --window-title=\"\(windowTitle)\""

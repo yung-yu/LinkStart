@@ -27,6 +27,9 @@ class AppViewModel: ObservableObject {
     @Published var displayHeight: String = "1080" {
         didSet { saveSetting(key: "displayHeight", value: displayHeight) }
     }
+    @Published var videoBitRate: String = "8" {
+        didSet { saveSetting(key: "videoBitRate", value: videoBitRate) }
+    }
     @Published var useNewDisplay: Bool = true {
         didSet { saveSetting(key: "useNewDisplay", value: useNewDisplay) }
     }
@@ -48,6 +51,7 @@ class AppViewModel: ObservableObject {
         
         displayWidth = defaults.string(forKey: "\(deviceId)_displayWidth") ?? "1920"
         displayHeight = defaults.string(forKey: "\(deviceId)_displayHeight") ?? "1080"
+        videoBitRate = defaults.string(forKey: "\(deviceId)_videoBitRate") ?? "8"
         
         if defaults.object(forKey: "\(deviceId)_useNewDisplay") != nil {
             useNewDisplay = defaults.bool(forKey: "\(deviceId)_useNewDisplay")
@@ -183,7 +187,7 @@ class AppViewModel: ObservableObject {
         }
     }
     
-    func launchApp(appId: String, resolution: String, useNewDisplay: Bool) {
+    func launchApp(appId: String, resolution: String, videoBitRate: String, useNewDisplay: Bool) {
         guard let app = apps.first(where: { $0.id == appId }) else { return }
         
         Task.detached {
@@ -213,7 +217,7 @@ class AppViewModel: ObservableObject {
                 // For the main mirror, keep the title stable as the device name for better window reuse.
                 let windowTitle = useNewDisplay ? "\(app.name) — \(deviceName)" : deviceName
                 
-                try await ShellManager.shared.startScrcpy(for: appId, deviceId: deviceId, resolution: resolution, useNewDisplay: useNewDisplay, iconPath: iconPath, title: windowTitle)
+                try await ShellManager.shared.startScrcpy(for: appId, deviceId: deviceId, resolution: resolution, videoBitRate: videoBitRate, useNewDisplay: useNewDisplay, iconPath: iconPath, title: windowTitle)
             } catch {
                 await MainActor.run {
                     self.alertError = error.localizedDescription

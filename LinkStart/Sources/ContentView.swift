@@ -146,6 +146,17 @@ struct ContentView: View {
                 HStack(spacing: 16) {
                     Spacer()
                     
+                    HStack(spacing: 4) {
+                        Text(NSLocalizedString("bit_rate_label", value: "Bit Rate:", comment: "Bit Rate Label"))
+                            .foregroundColor(.secondary)
+                        TextField("8", text: $viewModel.videoBitRate)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 40)
+                            .multilineTextAlignment(.center)
+                        Text("Mbps")
+                            .foregroundColor(.secondary)
+                    }
+                    
                     Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $viewModel.useNewDisplay)
                         .toggleStyle(.checkbox)
                     
@@ -226,7 +237,7 @@ struct ContentView: View {
                         ForEach(viewModel.filteredApps) { app in
                             AppItemView(app: app) {
                                 let res = "\(viewModel.displayWidth)x\(viewModel.displayHeight)"
-                                viewModel.launchApp(appId: app.id, resolution: res, useNewDisplay: viewModel.useNewDisplay)
+                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, useNewDisplay: viewModel.useNewDisplay)
                             }
                         }
                     }
