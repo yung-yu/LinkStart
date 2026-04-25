@@ -31,3 +31,5 @@
 "max_fps_label" = "最大 FPS:";
 "bit_rate_label" = "位元率:";
 "save_settings_btn" = "儲存";
+"turn_screen_off_toggle" = "關閉螢幕";
+"stay_awake_toggle" = "保持喚醒";

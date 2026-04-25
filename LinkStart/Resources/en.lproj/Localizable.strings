@@ -31,3 +31,5 @@
 "max_fps_label" = "Max FPS:";
 "bit_rate_label" = "Bit Rate:";
 "save_settings_btn" = "Save";
+"turn_screen_off_toggle" = "Turn Screen Off";
+"stay_awake_toggle" = "Stay Awake";

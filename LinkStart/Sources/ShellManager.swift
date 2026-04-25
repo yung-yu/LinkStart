@@ -167,7 +167,7 @@ struct ShellManager {
         try? task.run()
     }
     
-    func startScrcpy(for packageId: String, deviceId: String?, resolution: String, videoBitRate: String, maxFps: String, videoCodec: String, useNewDisplay: Bool, iconPath: String? = nil, title: String? = nil) async throws {
+    func startScrcpy(for packageId: String, deviceId: String?, resolution: String, videoBitRate: String, maxFps: String, videoCodec: String, useNewDisplay: Bool, turnScreenOff: Bool, stayAwake: Bool, iconPath: String? = nil, title: String? = nil) async throws {
         // Handle window reuse logic
         if useNewDisplay {
             // Check if this specific app is already running in a virtual display
@@ -211,6 +211,14 @@ struct ShellManager {
         
         if useNewDisplay {
             command += " --new-display=\(resolution)"
+        }
+        
+        if turnScreenOff {
+            command += " --turn-screen-off"
+        }
+        
+        if stayAwake {
+            command += " --stay-awake"
         }
              
         // Use a persistent task for scrcpy

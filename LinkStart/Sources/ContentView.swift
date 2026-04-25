@@ -140,70 +140,15 @@ struct ContentView: View {
                         Image(systemName: "info.circle")
                     }
                     .buttonStyle(.bordered)
-                }
-                
-                // Bottom Row
-                HStack(spacing: 16) {
-                    Spacer()
-                        
-                    HStack(spacing: 4) {
-                        Text(NSLocalizedString("codec_label", value: "Codec:", comment: "Codec Label"))
-                            .foregroundColor(.secondary)
-                        Picker("", selection: $viewModel.videoCodec) {
-                            Text("H.264").tag("h264")
-                            Text("H.265").tag("h265")
-                            Text("AV1").tag("av1")
-                        }
-                        .labelsHidden()
-                        .pickerStyle(.menu)
-                        .frame(width: 80)
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Text(NSLocalizedString("max_fps_label", value: "Max FPS:", comment: "Max FPS Label"))
-                            .foregroundColor(.secondary)
-                        TextField("60", text: $viewModel.maxFps)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 30)
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Text(NSLocalizedString("bit_rate_label", value: "Bit Rate:", comment: "Bit Rate Label"))
-                            .foregroundColor(.secondary)
-                        TextField("8", text: $viewModel.videoBitRate)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 30)
-                            .multilineTextAlignment(.center)
-                        Text("Mbps")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $viewModel.useNewDisplay)
-                        .toggleStyle(.checkbox)
-                    
-                    if viewModel.useNewDisplay {
-                        HStack(spacing: 4) {
-                            TextField(NSLocalizedString("width_label", comment: "Width"), text: $viewModel.displayWidth)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 50)
-                                .multilineTextAlignment(.center)
-                            Text("x")
-                                .foregroundColor(.secondary)
-                            TextField(NSLocalizedString("height_label", comment: "Height"), text: $viewModel.displayHeight)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 50)
-                                .multilineTextAlignment(.center)
-                        }
-                    }
                     
                     Button(action: {
-                        viewModel.saveCurrentSettings()
+                        viewModel.showSettings = true
                     }) {
-                        Text(NSLocalizedString("save_settings_btn", value: "Save", comment: "Save Button"))
+                        Image(systemName: "gearshape")
                     }
                     .buttonStyle(.bordered)
                 }
+                
             }
             .padding()
             .background(Color(NSColor.windowBackgroundColor).opacity(0.9))
@@ -266,7 +211,7 @@ struct ContentView: View {
                         ForEach(viewModel.filteredApps) { app in
                             AppItemView(app: app) {
                                 let res = "\(viewModel.displayWidth)x\(viewModel.displayHeight)"
-                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, maxFps: viewModel.maxFps, videoCodec: viewModel.videoCodec, useNewDisplay: viewModel.useNewDisplay)
+                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, maxFps: viewModel.maxFps, videoCodec: viewModel.videoCodec, useNewDisplay: viewModel.useNewDisplay, turnScreenOff: viewModel.turnScreenOff, stayAwake: viewModel.stayAwake)
                             }
                         }
                     }
@@ -334,6 +279,9 @@ struct ContentView: View {
             }
             .padding(24)
             .frame(width: 320)
+        }
+        .sheet(isPresented: $viewModel.showSettings) {
+            SettingsView(viewModel: viewModel)
         }
     }
 }

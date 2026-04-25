@@ -25,6 +25,8 @@ class AppViewModel: ObservableObject {
     @Published var maxFps: String = "60"
     @Published var videoCodec: String = "h264"
     @Published var useNewDisplay: Bool = true
+    @Published var turnScreenOff: Bool = false
+    @Published var stayAwake: Bool = false
     
     init() {
         if !selectedDeviceId.isEmpty {
@@ -44,6 +46,8 @@ class AppViewModel: ObservableObject {
         defaults.set(maxFps, forKey: "\(deviceId)_maxFps")
         defaults.set(videoCodec, forKey: "\(deviceId)_videoCodec")
         defaults.set(useNewDisplay, forKey: "\(deviceId)_useNewDisplay")
+        defaults.set(turnScreenOff, forKey: "\(deviceId)_turnScreenOff")
+        defaults.set(stayAwake, forKey: "\(deviceId)_stayAwake")
     }
     
     private func loadSettings(for deviceId: String) {
@@ -67,11 +71,24 @@ class AppViewModel: ObservableObject {
         } else {
             includeSystemApps = false
         }
+        
+        if defaults.object(forKey: "\(deviceId)_turnScreenOff") != nil {
+            turnScreenOff = defaults.bool(forKey: "\(deviceId)_turnScreenOff")
+        } else {
+            turnScreenOff = false
+        }
+        
+        if defaults.object(forKey: "\(deviceId)_stayAwake") != nil {
+            stayAwake = defaults.bool(forKey: "\(deviceId)_stayAwake")
+        } else {
+            stayAwake = false
+        }
     }
     @Published var alertError: String? = nil
     @Published var errorMsg: String? = nil
     
     @Published var showAbout: Bool = false
+    @Published var showSettings: Bool = false
     @Published var aboutAdbVersion: String = ""
     @Published var aboutScrcpyVersion: String = ""
     @Published var aboutAppVersion: String = ""
@@ -190,7 +207,7 @@ class AppViewModel: ObservableObject {
         }
     }
     
-    func launchApp(appId: String, resolution: String, videoBitRate: String, maxFps: String, videoCodec: String, useNewDisplay: Bool) {
+    func launchApp(appId: String, resolution: String, videoBitRate: String, maxFps: String, videoCodec: String, useNewDisplay: Bool, turnScreenOff: Bool, stayAwake: Bool) {
         guard let app = apps.first(where: { $0.id == appId }) else { return }
         
         Task.detached {
@@ -220,7 +237,7 @@ class AppViewModel: ObservableObject {
                 // For the main mirror, keep the title stable as the device name for better window reuse.
                 let windowTitle = useNewDisplay ? "\(app.name) — \(deviceName)" : deviceName
                 
-                try await ShellManager.shared.startScrcpy(for: appId, deviceId: deviceId, resolution: resolution, videoBitRate: videoBitRate, maxFps: maxFps, videoCodec: videoCodec, useNewDisplay: useNewDisplay, iconPath: iconPath, title: windowTitle)
+                try await ShellManager.shared.startScrcpy(for: appId, deviceId: deviceId, resolution: resolution, videoBitRate: videoBitRate, maxFps: maxFps, videoCodec: videoCodec, useNewDisplay: useNewDisplay, turnScreenOff: turnScreenOff, stayAwake: stayAwake, iconPath: iconPath, title: windowTitle)
             } catch {
                 await MainActor.run {
                     self.alertError = error.localizedDescription
