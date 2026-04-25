@@ -196,6 +196,13 @@ struct ContentView: View {
                                 .multilineTextAlignment(.center)
                         }
                     }
+                    
+                    Button(action: {
+                        viewModel.saveCurrentSettings()
+                    }) {
+                        Text(NSLocalizedString("save_settings_btn", value: "Save", comment: "Save Button"))
+                    }
+                    .buttonStyle(.bordered)
                 }
             }
             .padding()

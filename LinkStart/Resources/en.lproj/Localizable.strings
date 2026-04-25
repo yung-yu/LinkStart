@@ -27,3 +27,7 @@
 "about_source" = "Source: ";
 "about_contact" = "Contact: ";
 "about_app_ver" = "App Version: ";
+"codec_label" = "Codec:";
+"max_fps_label" = "Max FPS:";
+"bit_rate_label" = "Bit Rate:";
+"save_settings_btn" = "Save";

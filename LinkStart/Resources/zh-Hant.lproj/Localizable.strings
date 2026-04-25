@@ -27,3 +27,7 @@
 "about_source" = "來源: ";
 "about_contact" = "聯絡: ";
 "about_app_ver" = "應用程式版本: ";
+"codec_label" = "格式:";
+"max_fps_label" = "最大 FPS:";
+"bit_rate_label" = "位元率:";
+"save_settings_btn" = "儲存";

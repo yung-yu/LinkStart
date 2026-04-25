@@ -18,27 +18,13 @@ class AppViewModel: ObservableObject {
     @Published var progress: String = ""
     @Published var searchText: String = ""
     
-    @Published var includeSystemApps: Bool = false {
-        didSet { saveSetting(key: "includeSystemApps", value: includeSystemApps) }
-    }
-    @Published var displayWidth: String = "1920" {
-        didSet { saveSetting(key: "displayWidth", value: displayWidth) }
-    }
-    @Published var displayHeight: String = "1080" {
-        didSet { saveSetting(key: "displayHeight", value: displayHeight) }
-    }
-    @Published var videoBitRate: String = "8" {
-        didSet { saveSetting(key: "videoBitRate", value: videoBitRate) }
-    }
-    @Published var maxFps: String = "60" {
-        didSet { saveSetting(key: "maxFps", value: maxFps) }
-    }
-    @Published var videoCodec: String = "h264" {
-        didSet { saveSetting(key: "videoCodec", value: videoCodec) }
-    }
-    @Published var useNewDisplay: Bool = true {
-        didSet { saveSetting(key: "useNewDisplay", value: useNewDisplay) }
-    }
+    @Published var includeSystemApps: Bool = false
+    @Published var displayWidth: String = "1920"
+    @Published var displayHeight: String = "1080"
+    @Published var videoBitRate: String = "8"
+    @Published var maxFps: String = "60"
+    @Published var videoCodec: String = "h264"
+    @Published var useNewDisplay: Bool = true
     
     init() {
         if !selectedDeviceId.isEmpty {
@@ -46,9 +32,18 @@ class AppViewModel: ObservableObject {
         }
     }
     
-    private func saveSetting(key: String, value: Any) {
+    func saveCurrentSettings() {
         guard !selectedDeviceId.isEmpty else { return }
-        UserDefaults.standard.set(value, forKey: "\(selectedDeviceId)_\(key)")
+        let defaults = UserDefaults.standard
+        let deviceId = selectedDeviceId
+        
+        defaults.set(includeSystemApps, forKey: "\(deviceId)_includeSystemApps")
+        defaults.set(displayWidth, forKey: "\(deviceId)_displayWidth")
+        defaults.set(displayHeight, forKey: "\(deviceId)_displayHeight")
+        defaults.set(videoBitRate, forKey: "\(deviceId)_videoBitRate")
+        defaults.set(maxFps, forKey: "\(deviceId)_maxFps")
+        defaults.set(videoCodec, forKey: "\(deviceId)_videoCodec")
+        defaults.set(useNewDisplay, forKey: "\(deviceId)_useNewDisplay")
     }
     
     private func loadSettings(for deviceId: String) {
