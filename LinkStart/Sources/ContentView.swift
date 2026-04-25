@@ -147,6 +147,19 @@ struct ContentView: View {
                     Spacer()
                         
                     HStack(spacing: 4) {
+                        Text(NSLocalizedString("codec_label", value: "Codec:", comment: "Codec Label"))
+                            .foregroundColor(.secondary)
+                        Picker("", selection: $viewModel.videoCodec) {
+                            Text("H.264").tag("h264")
+                            Text("H.265").tag("h265")
+                            Text("AV1").tag("av1")
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.menu)
+                        .frame(width: 80)
+                    }
+                    
+                    HStack(spacing: 4) {
                         Text(NSLocalizedString("max_fps_label", value: "Max FPS:", comment: "Max FPS Label"))
                             .foregroundColor(.secondary)
                         TextField("60", text: $viewModel.maxFps)
@@ -246,7 +259,7 @@ struct ContentView: View {
                         ForEach(viewModel.filteredApps) { app in
                             AppItemView(app: app) {
                                 let res = "\(viewModel.displayWidth)x\(viewModel.displayHeight)"
-                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, maxFps: viewModel.maxFps, useNewDisplay: viewModel.useNewDisplay)
+                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, maxFps: viewModel.maxFps, videoCodec: viewModel.videoCodec, useNewDisplay: viewModel.useNewDisplay)
                             }
                         }
                     }
