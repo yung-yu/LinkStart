@@ -145,13 +145,22 @@ struct ContentView: View {
                 // Bottom Row
                 HStack(spacing: 16) {
                     Spacer()
+                        
+                    HStack(spacing: 4) {
+                        Text(NSLocalizedString("max_fps_label", value: "Max FPS:", comment: "Max FPS Label"))
+                            .foregroundColor(.secondary)
+                        TextField("60", text: $viewModel.maxFps)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 30)
+                            .multilineTextAlignment(.center)
+                    }
                     
                     HStack(spacing: 4) {
                         Text(NSLocalizedString("bit_rate_label", value: "Bit Rate:", comment: "Bit Rate Label"))
                             .foregroundColor(.secondary)
                         TextField("8", text: $viewModel.videoBitRate)
                             .textFieldStyle(.roundedBorder)
-                            .frame(width: 40)
+                            .frame(width: 30)
                             .multilineTextAlignment(.center)
                         Text("Mbps")
                             .foregroundColor(.secondary)
@@ -237,7 +246,7 @@ struct ContentView: View {
                         ForEach(viewModel.filteredApps) { app in
                             AppItemView(app: app) {
                                 let res = "\(viewModel.displayWidth)x\(viewModel.displayHeight)"
-                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, useNewDisplay: viewModel.useNewDisplay)
+                                viewModel.launchApp(appId: app.id, resolution: res, videoBitRate: viewModel.videoBitRate, maxFps: viewModel.maxFps, useNewDisplay: viewModel.useNewDisplay)
                             }
                         }
                     }
