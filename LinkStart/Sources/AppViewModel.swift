@@ -6,11 +6,61 @@ class AppViewModel: ObservableObject {
     @Published var apps: [AppDetail] = []
     @Published var devices: [AdbDevice] = []
     
-    @Published var selectedDeviceId: String = UserDefaults.standard.string(forKey: "selectedDeviceId") ?? ""
+    @Published var selectedDeviceId: String = UserDefaults.standard.string(forKey: "selectedDeviceId") ?? "" {
+        didSet {
+            if selectedDeviceId != oldValue {
+                UserDefaults.standard.set(selectedDeviceId, forKey: "selectedDeviceId")
+                loadSettings(for: selectedDeviceId)
+            }
+        }
+    }
     @Published var isLoading: Bool = false
     @Published var progress: String = ""
     @Published var searchText: String = ""
-    @Published var includeSystemApps: Bool = false
+    
+    @Published var includeSystemApps: Bool = false {
+        didSet { saveSetting(key: "includeSystemApps", value: includeSystemApps) }
+    }
+    @Published var displayWidth: String = "1920" {
+        didSet { saveSetting(key: "displayWidth", value: displayWidth) }
+    }
+    @Published var displayHeight: String = "1080" {
+        didSet { saveSetting(key: "displayHeight", value: displayHeight) }
+    }
+    @Published var useNewDisplay: Bool = true {
+        didSet { saveSetting(key: "useNewDisplay", value: useNewDisplay) }
+    }
+    
+    init() {
+        if !selectedDeviceId.isEmpty {
+            loadSettings(for: selectedDeviceId)
+        }
+    }
+    
+    private func saveSetting(key: String, value: Any) {
+        guard !selectedDeviceId.isEmpty else { return }
+        UserDefaults.standard.set(value, forKey: "\(selectedDeviceId)_\(key)")
+    }
+    
+    private func loadSettings(for deviceId: String) {
+        guard !deviceId.isEmpty else { return }
+        let defaults = UserDefaults.standard
+        
+        displayWidth = defaults.string(forKey: "\(deviceId)_displayWidth") ?? "1920"
+        displayHeight = defaults.string(forKey: "\(deviceId)_displayHeight") ?? "1080"
+        
+        if defaults.object(forKey: "\(deviceId)_useNewDisplay") != nil {
+            useNewDisplay = defaults.bool(forKey: "\(deviceId)_useNewDisplay")
+        } else {
+            useNewDisplay = true
+        }
+        
+        if defaults.object(forKey: "\(deviceId)_includeSystemApps") != nil {
+            includeSystemApps = defaults.bool(forKey: "\(deviceId)_includeSystemApps")
+        } else {
+            includeSystemApps = false
+        }
+    }
     @Published var alertError: String? = nil
     @Published var errorMsg: String? = nil
     

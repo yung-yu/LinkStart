@@ -67,10 +67,6 @@ struct FallbackIcon: View {
 struct ContentView: View {
     @StateObject private var viewModel = AppViewModel()
     
-    @AppStorage("displayWidth") private var displayWidth: String = "1920"
-    @AppStorage("displayHeight") private var displayHeight: String = "1080"
-    @AppStorage("useNewDisplay") private var useNewDisplay: Bool = true
-    
     let columns = [
         GridItem(.adaptive(minimum: 120), spacing: 20)
     ]
@@ -86,17 +82,19 @@ struct ContentView: View {
                         .fontWeight(.bold)
                     
                     if !viewModel.devices.isEmpty {
-                        Picker("", selection: $viewModel.selectedDeviceId) {
+                        Picker("", selection: Binding(
+                            get: { viewModel.selectedDeviceId },
+                            set: { 
+                                viewModel.selectedDeviceId = $0
+                                viewModel.refreshApps()
+                            }
+                        )) {
                             ForEach(viewModel.devices) { device in
                                 Text(device.name).tag(device.id)
                             }
                         }
                         .pickerStyle(.menu)
                         .frame(maxWidth: 150)
-                        .onChange(of: viewModel.selectedDeviceId) { newValue in
-                            UserDefaults.standard.set(newValue, forKey: "selectedDeviceId")
-                            viewModel.refreshApps()
-                        }
                         
                         HStack(spacing: 8) {
                             Image(systemName: "magnifyingglass")
@@ -119,11 +117,14 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    Toggle(NSLocalizedString("include_system_apps", comment: "Include System Apps"), isOn: $viewModel.includeSystemApps)
-                        .toggleStyle(.checkbox)
-                        .onChange(of: viewModel.includeSystemApps) { _ in
+                    Toggle(NSLocalizedString("include_system_apps", comment: "Include System Apps"), isOn: Binding(
+                        get: { viewModel.includeSystemApps },
+                        set: { 
+                            viewModel.includeSystemApps = $0
                             viewModel.refreshApps()
                         }
+                    ))
+                        .toggleStyle(.checkbox)
                     
                     Button(action: {
                         viewModel.checkDependenciesAndRefresh()
@@ -145,18 +146,18 @@ struct ContentView: View {
                 HStack(spacing: 16) {
                     Spacer()
                     
-                    Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $useNewDisplay)
+                    Toggle(NSLocalizedString("new_display_toggle", comment: "New Display Toggle"), isOn: $viewModel.useNewDisplay)
                         .toggleStyle(.checkbox)
                     
-                    if useNewDisplay {
+                    if viewModel.useNewDisplay {
                         HStack(spacing: 4) {
-                            TextField(NSLocalizedString("width_label", comment: "Width"), text: $displayWidth)
+                            TextField(NSLocalizedString("width_label", comment: "Width"), text: $viewModel.displayWidth)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 50)
                                 .multilineTextAlignment(.center)
                             Text("x")
                                 .foregroundColor(.secondary)
-                            TextField(NSLocalizedString("height_label", comment: "Height"), text: $displayHeight)
+                            TextField(NSLocalizedString("height_label", comment: "Height"), text: $viewModel.displayHeight)
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 50)
                                 .multilineTextAlignment(.center)
@@ -224,8 +225,8 @@ struct ContentView: View {
                     LazyVGrid(columns: columns, spacing: 20) {
                         ForEach(viewModel.filteredApps) { app in
                             AppItemView(app: app) {
-                                let res = "\(displayWidth)x\(displayHeight)"
-                                viewModel.launchApp(appId: app.id, resolution: res, useNewDisplay: useNewDisplay)
+                                let res = "\(viewModel.displayWidth)x\(viewModel.displayHeight)"
+                                viewModel.launchApp(appId: app.id, resolution: res, useNewDisplay: viewModel.useNewDisplay)
                             }
                         }
                     }
